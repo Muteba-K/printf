@@ -1,108 +1,63 @@
 #include "main.h"
-void print_buffer(char buffer[], int *buff_ind);
+#include <stdarg.h>
+#include <stdlib.h>
 
 /**
- * _printf - Printf function
- * @format: format.
- * Return: Printed chars.
+ * _printf - Custom printf function with additional %b specifier.
+ * @format: Format string.
+ * @...: Additional arguments.
+ * Return: Number of characters printed.
  */
 int _printf(const char *format, ...)
-
 {
+    // ... (rest of your _printf implementation)
 
-int i, printed = 0, printed_chars = 0;
+    int printed_chars = 0;
+    va_list args;
+    va_start(args, format);
 
-int flags, width, precision, size, buff_ind = 0;
+    while (format && *format)
+    {
+        if (*format == '%' && *(format + 1) == 'b')
+        {
+            // Read the next argument from va_list
+            unsigned int num = va_arg(args, unsigned int);
 
-va_list list;
+            // Convert and print the number in binary
+            printed_chars += print_binary(num);
+            format += 2; // Move past '%b'
+        }
+        else
+        {
+            // ... (rest of your _printf format handling)
+            format++;
+        }
+    }
 
-char buffer[BUFF_SIZE];
-
-if (format == NULL)
-
-return (-1);
-
-va_start(list, format);
-
-for (i = 0; format && format[i] != '\0'; i++)
-
-{
-
-if (format[i] != '%')
-
-{
-
-buffer[buff_ind++] = format[i];
-
-if (buff_ind == BUFF_SIZE)
-
-print_buffer(buffer, &buff_ind);
-
-/* write(1, &format[i], 1);*/
-
-printed_chars++;
-
-}
-
-else
-
-{
-
-print_buffer(buffer, &buff_ind);
-
-flags = get_flags(format, &i);
-
-width = get_width(format, &i, list);
-
-precision = get_precision(format, &i, list);
-
-size = get_size(format, &i);
-
-++i;
-
-printed = handle_print(format, &i, list, buffer,
-
-flags, width, precision, size);
-
-if (printed == -1)
-
-return (-1);
-
-printed_chars += printed;
-
-}
-
-}
-
-
-
-print_buffer(buffer, &buff_ind);
-
-
-
-va_end(list);
-
-
-
-return (printed_chars);
-
+    va_end(args);
+    return printed_chars;
 }
 
 /**
- * print_buffer - Prints the contents of the buffer if it exist
- * @buffer: Array of chars
- * @buff_ind: Index at which to add next char, represents the length.
+ * print_binary - Helper function to convert and print a number in binary.
+ * @num: Number to be converted.
+ * Return: Number of characters printed.
  */
-void print_buffer(char buffer[], int *buff_ind)
-
+int print_binary(unsigned int num)
 {
+    // Handle the special case of 0
+    if (num == 0)
+    {
+        _putchar('0');
+        return 1;
+    }
 
-if (*buff_ind > 0)
-
-write(1, &buffer[0], *buff_ind);
-
-
-
-*buff_ind = 0;
-
+    // Use recursion to print binary representation
+    int printed_chars = 0;
+    if (num > 0)
+    {
+        printed_chars += print_binary(num / 2);
+        _putchar(num % 2 + '0');
+    }
+    return printed_chars;
 }
